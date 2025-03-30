@@ -3,6 +3,16 @@ const burger = document.querySelector('.burger');
 const nav = document.querySelector('.nav-links');
 const navLinks = document.querySelectorAll('.nav-links li');
 
+// Function to close mobile menu
+const closeMobileMenu = () => {
+    nav.classList.remove('nav-active');
+    burger.classList.remove('toggle');
+    // Reset link animations
+    navLinks.forEach(link => {
+        link.style.animation = '';
+    });
+};
+
 burger.addEventListener('click', () => {
     // Toggle Navigation
     nav.classList.toggle('nav-active');
@@ -20,11 +30,32 @@ burger.addEventListener('click', () => {
     burger.classList.toggle('toggle');
 });
 
+// Close menu when clicking outside
+document.addEventListener('click', (e) => {
+    if (!nav.contains(e.target) && !burger.contains(e.target)) {
+        closeMobileMenu();
+    }
+});
+
 // Smooth Scrolling for Navigation Links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
-        document.querySelector(this.getAttribute('href')).scrollIntoView({
+        
+        // Close mobile menu if open
+        closeMobileMenu();
+        
+        // Get the target section
+        const targetId = this.getAttribute('href');
+        const targetSection = document.querySelector(targetId);
+        
+        // Calculate offset for fixed navbar
+        const navbarHeight = document.querySelector('.navbar').offsetHeight;
+        const targetPosition = targetSection.getBoundingClientRect().top + window.pageYOffset - navbarHeight;
+        
+        // Smooth scroll to target
+        window.scrollTo({
+            top: targetPosition,
             behavior: 'smooth'
         });
     });
